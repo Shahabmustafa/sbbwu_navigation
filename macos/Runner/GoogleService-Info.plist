@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDGmW4-E0fdML2FPc33iiE0u5XDM2mIMmg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>978230415578</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.sbbwuNavigator.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>sbbwu-project-5c2aa</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sbbwu-project-5c2aa.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:978230415578:ios:b03e9af89718e46589d5e3</string>
+</dict>
+</plist>

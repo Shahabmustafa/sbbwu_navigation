@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "978230415578",
+    "project_id": "sbbwu-project-5c2aa",
+    "storage_bucket": "sbbwu-project-5c2aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978230415578:android:905ca29fcd518e8989d5e3",
+        "android_client_info": {
+          "package_name": "com.example.sbbwu_navigator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQcXNrX13ft7jLeBSVB0eXYJWRMzfJ9JE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
