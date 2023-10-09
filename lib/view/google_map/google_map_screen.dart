@@ -56,7 +56,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     _marker.addAll(_list);
     _polygone.add(
       Polygon(
-        polygonId: PolygonId("1"),
+        polygonId: PolygonId("2"),
         points: points,
         fillColor: Colors.blue.withOpacity(0.1),
         geodesic: true,
@@ -91,8 +91,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
             print(value.longitude.toString() + value.latitude.toString());
             _marker.add(
               Marker(
-                markerId: MarkerId("1"),
+                markerId: MarkerId("2"),
                 position: LatLng(value.latitude, value.longitude),
+                icon: BitmapDescriptor.defaultMarkerWithHue(50.0),
                 infoWindow: InfoWindow(
                   title: "My Current Location",
                 ),
