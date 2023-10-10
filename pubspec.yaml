@@ -44,10 +44,22 @@ dependencies:
   google_maps_flutter: ^2.5.0
   flutter_geocoder: ^0.2.2-nullsafety
   geolocator: ^10.1.0
+  dio: ^5.3.3
+  flutter_polyline_points: ^2.0.0
+  location: ^5.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/images.jpeg"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

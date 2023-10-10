@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -17,6 +18,8 @@ class GoogleMapPage extends StatefulWidget {
 class _GoogleMapPageState extends State<GoogleMapPage> {
 
   final List<Marker> _marker = [];
+
+  final List<LatLng> polylineCoordinate = [];
 
   List<LatLng> points = [
     LatLng(34.057705, 71.569144),
@@ -39,6 +42,26 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     });
     return await Geolocator.getCurrentPosition();
   }
+
+  // void getPolyPoints()async{
+  //   PolylinePoints polylinePoints = PolylinePoints();
+  //
+  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+  //       googleApiKey,
+  //       PointLatLng(widget.latitude, widget.longitude),
+  //       PointLatLng(widget.latitude, widget.longitude),
+  //   );
+  //   if(result.points.isNotEmpty){
+  //     result.points.forEach((element) =>
+  //         polylineCoordinate.add(
+  //           LatLng(element.latitude,element.longitude),
+  //         ),
+  //     );
+  //     setState(() {
+  //
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
@@ -83,6 +106,12 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         mapType: MapType.hybrid,
         compassEnabled: true,
         polygons: _polygone,
+        polylines: {
+          Polyline(
+            polylineId: PolylineId("0"),
+            points: polylineCoordinate,
+          ),
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ()async{
@@ -93,7 +122,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
               Marker(
                 markerId: MarkerId("2"),
                 position: LatLng(value.latitude, value.longitude),
-                icon: BitmapDescriptor.defaultMarkerWithHue(50.0),
+                // icon: BitmapDescriptor.defaultMarker,
                 infoWindow: InfoWindow(
                   title: "My Current Location",
                 ),
