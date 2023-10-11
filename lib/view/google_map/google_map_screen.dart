@@ -43,25 +43,25 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  // void getPolyPoints()async{
-  //   PolylinePoints polylinePoints = PolylinePoints();
-  //
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //       googleApiKey,
-  //       PointLatLng(widget.latitude, widget.longitude),
-  //       PointLatLng(widget.latitude, widget.longitude),
-  //   );
-  //   if(result.points.isNotEmpty){
-  //     result.points.forEach((element) =>
-  //         polylineCoordinate.add(
-  //           LatLng(element.latitude,element.longitude),
-  //         ),
-  //     );
-  //     setState(() {
-  //
-  //     });
-  //   }
-  // }
+  void getPolyPoints()async{
+    PolylinePoints polylinePoints = PolylinePoints();
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        googleApiKey,
+        PointLatLng(widget.latitude, widget.longitude),
+        PointLatLng(widget.latitude, widget.longitude),
+    );
+    if(result.points.isNotEmpty){
+      result.points.forEach((element) =>
+          polylineCoordinate.add(
+            LatLng(element.latitude,element.longitude),
+          ),
+      );
+      setState(() {
+
+      });
+    }
+  }
 
   @override
   void initState() {
