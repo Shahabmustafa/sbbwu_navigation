@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
@@ -19,8 +18,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   final List<Marker> _marker = [];
 
-  final List<LatLng> polylineCoordinate = [];
-
   List<LatLng> points = [
     LatLng(34.057705, 71.569144),
     LatLng(34.057599, 71.566108),
@@ -33,7 +30,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   Set<Polygon> _polygone = HashSet<Polygon>();
 
   Completer<GoogleMapController> _controller = Completer();
-
+  PolylinePoints polylinePoints = PolylinePoints();
+  String mapTheme = "";
+  // user current location
   Future<Position> getUserCurrentLocation()async{
     await Geolocator.requestPermission().then((value){
 
@@ -43,29 +42,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-  void getPolyPoints()async{
-    PolylinePoints polylinePoints = PolylinePoints();
-
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-        googleApiKey,
-        PointLatLng(widget.latitude, widget.longitude),
-        PointLatLng(widget.latitude, widget.longitude),
-    );
-    if(result.points.isNotEmpty){
-      result.points.forEach((element) =>
-          polylineCoordinate.add(
-            LatLng(element.latitude,element.longitude),
-          ),
-      );
-      setState(() {
-
-      });
-    }
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     final List<Marker> _list = [
       Marker(
@@ -77,22 +55,62 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       ),
     ];
     _marker.addAll(_list);
-    _polygone.add(
-      Polygon(
-        polygonId: PolygonId("2"),
-        points: points,
-        fillColor: Colors.blue.withOpacity(0.1),
-        geodesic: true,
-        strokeWidth: 1,
-        strokeColor: Colors.blue,
-      )
-    );
+    // _polygone.add(
+    //   Polygon(
+    //     polygonId: PolygonId("2"),
+    //     points: points,
+    //     fillColor: Colors.blue.withOpacity(0.1),
+    //     geodesic: true,
+    //     strokeWidth: 1,
+    //     strokeColor: Colors.blue,
+    //   ),
+    // );
+    DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
+      mapTheme = value;
+
+    });
   }
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.departmentName),
         centerTitle: true,
+        actions: [
+          PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Silver")
+                ),
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/night_theme.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Night")
+                ),
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/aubergine.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Aubergine")
+                ),
+              ]
+          ),
+        ],
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
@@ -100,18 +118,16 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           zoom: 17,
         ),
         markers: Set<Marker>.of(_marker),
+        zoomGesturesEnabled: true,
         onMapCreated: (GoogleMapController controller){
           _controller.complete(controller);
+          controller.setMapStyle(mapTheme);
         },
-        mapType: MapType.hybrid,
+        // trafficEnabled: true,
+        mapType: MapType.normal,
         compassEnabled: true,
         polygons: _polygone,
-        polylines: {
-          Polyline(
-            polylineId: PolylineId("0"),
-            points: polylineCoordinate,
-          ),
-        },
+        zoomControlsEnabled: false,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: ()async{
@@ -136,7 +152,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
             controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
           });
           setState(() {
-            
+
           });
         },
         child: Icon(Icons.my_location),

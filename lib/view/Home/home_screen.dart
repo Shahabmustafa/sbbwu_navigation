@@ -20,18 +20,23 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: InkWell(
-          onTap: (){
-            FirebaseAuth.instance.signOut().then((value){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-              FlutterToast().flutterToastMessage(context, "You account has sign out");
-            });
-          },
-          child: Icon(
-            Icons.exit_to_app
-          ),
-        ),
         title: Text("Select Department"),
+        actions: [
+          InkWell(
+            onTap: (){
+              FirebaseAuth.instance.signOut().then((value){
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                FlutterToast().flutterToastMessage(context, "You account has sign out");
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Icon(
+                  Icons.exit_to_app
+              ),
+            ),
+          ),
+        ],
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -65,12 +70,12 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      floatingActionButton: auth!.email == adminEmail ?  FloatingActionButton(
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddDepartment()));
-        },
-        child: Icon(Icons.add),
-      ) : null,
+      // floatingActionButton: auth!.email == adminEmail ?  FloatingActionButton(
+      //   onPressed: (){
+      //     Navigator.push(context, MaterialPageRoute(builder: (context) => AddDepartment()));
+      //   },
+      //   child: Icon(Icons.add),
+      // ) : null,
     );
   }
 }
