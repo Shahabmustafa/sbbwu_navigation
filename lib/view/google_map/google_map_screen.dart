@@ -1,10 +1,5 @@
-import 'dart:async';
-import 'dart:collection';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class GoogleMapPage extends StatefulWidget {
@@ -18,17 +13,20 @@ class GoogleMapPage extends StatefulWidget {
 
 class _GoogleMapPageState extends State<GoogleMapPage> {
 
-  final List<Marker> _marker = [];
+  // final List<Marker> _marker = [];
+  // double? cureentlat;
+  // double? cureentlng;
+
+  // start this line direction setting
+  GoogleMapController? mapController; //contrller for Google map
   PolylinePoints polylinePoints = PolylinePoints();
-  final String key = "AIzaSyBl-KCBDGGH1rxx58AaroJ5pl45E3axUDc";
-  double? cureentlat;
-  double? cureentlng;
-  late GoogleMapController controller;
-  final Set<Polyline> polyline = {};
-  List<LatLng> routeCoords = [];
+  String key = "AIzaSyAFNRY6Cy-XA24Okt2vJll8NMQa2-6tlDs";
 
+  Set<Marker> markers = Set(); //markers for google map
+  Map<PolylineId, Polyline> polylines = {}; //polylines to show direction
 
-
+  LatLng startLocation = LatLng(34.028892, 71.591183);
+  LatLng endLocation = LatLng(34.014564, 71.554453);
 
   // List<LatLng> points = [
   //   LatLng(34.057705, 71.569144),
@@ -41,32 +39,53 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   // Set<Polygon> _polygone = HashSet<Polygon>();
 
-  Completer<GoogleMapController> _controller = Completer();
-  String mapTheme = "";
+  // Completer<GoogleMapController> _controller = Completer();
+  // String mapTheme = "";
 
   // user current location
-  Future<Position> getUserCurrentLocation()async{
-    await Geolocator.requestPermission().then((value){
-
-    }).onError((error, stackTrace){
-      print("Error : ${error}");
-    });
-    return await Geolocator.getCurrentPosition();
-  }
+  // Future<Position> getUserCurrentLocation()async{
+  //   await Geolocator.requestPermission().then((value){
+  //
+  //   }).onError((error, stackTrace){
+  //     print("Error : ${error}");
+  //   });
+  //   return await Geolocator.getCurrentPosition();
+  // }
 
   @override
   void initState() {
     super.initState();
-    final List<Marker> _list = [
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(widget.latitude,widget.longitude),
-        infoWindow: InfoWindow(
-          title: "${widget.departmentName} Department",
-        ),
+
+    markers.add(Marker( //add start location marker
+      markerId: MarkerId(startLocation.toString()),
+      position: startLocation, //position of marker
+      infoWindow: InfoWindow( //popup info
+        title: 'Starting Point ',
+        snippet: 'Start Marker',
       ),
-    ];
-    _marker.addAll(_list);
+      icon: BitmapDescriptor.defaultMarker, //Icon for Marker
+    ));
+    markers.add(Marker( //add distination location marker
+      markerId: MarkerId(endLocation.toString()),
+      position: endLocation, //position of marker
+      infoWindow: InfoWindow( //popup info
+        title: 'Destination Point ',
+        snippet: 'Destination Marker',
+      ),
+      icon: BitmapDescriptor.defaultMarker, //Icon for Marker
+    ));
+    getDirections(); //fetch direction polylines from Google API
+
+    // final List<Marker> _list = [
+    //   Marker(
+    //     markerId: MarkerId('1'),
+    //     position: LatLng(widget.latitude,widget.longitude),
+    //     infoWindow: InfoWindow(
+    //       title: "${widget.departmentName} Department",
+    //     ),
+    //   ),
+    // ];
+    // _marker.addAll(_list);
     // _polygone.add(
     //   Polygon(
     //     polygonId: PolygonId("2"),
@@ -77,10 +96,40 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     //     strokeColor: Colors.blue,
     //   ),
     // );
-    DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
-      mapTheme = value;
+    // DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
+    //   mapTheme = value;
+    //
+    // });
+  }
+  getDirections()async{
+    List<LatLng> polylineCoordinates = [];
 
-    });
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      key,
+      PointLatLng(startLocation.latitude, startLocation.longitude),
+      PointLatLng(endLocation.latitude, endLocation.longitude),
+      travelMode: TravelMode.driving,
+    );
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    } else {
+      print(result.points);
+    }
+    addPolyLine(polylineCoordinates);
+  }
+
+  addPolyLine(List<LatLng> polylineCoordinates) {
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.blue,
+      points: polylineCoordinates,
+      width: 4,
+    );
+    polylines[id] = polyline;
+    setState(() {});
   }
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,116 +137,105 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         title: Text(widget.departmentName),
         centerTitle: true,
         actions: [
-          PopupMenuButton(
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                    onTap: (){
-                      _controller.future.then((value){
-                        DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((String){
-                          value.setMapStyle(String);
-                        });
-                      });
-                    },
-                    child: Text("Silver")
-                ),
-                PopupMenuItem(
-                    onTap: (){
-                      _controller.future.then((value){
-                        DefaultAssetBundle.of(context).loadString("assets/maptheme/night_theme.json").then((String){
-                          value.setMapStyle(String);
-                        });
-                      });
-                    },
-                    child: Text("Night")
-                ),
-                PopupMenuItem(
-                    onTap: (){
-                      _controller.future.then((value){
-                        DefaultAssetBundle.of(context).loadString("assets/maptheme/aubergine.json").then((String){
-                          value.setMapStyle(String);
-                        });
-                      });
-                    },
-                    child: Text("Aubergine")
-                ),
-              ]
-          ),
+          // PopupMenuButton(
+          //     itemBuilder: (context) => [
+          //       PopupMenuItem(
+          //           onTap: (){
+          //             _controller.future.then((value){
+          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((String){
+          //                 value.setMapStyle(String);
+          //               });
+          //             });
+          //           },
+          //           child: Text("Silver")
+          //       ),
+          //       PopupMenuItem(
+          //           onTap: (){
+          //             _controller.future.then((value){
+          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/night_theme.json").then((String){
+          //                 value.setMapStyle(String);
+          //               });
+          //             });
+          //           },
+          //           child: Text("Night")
+          //       ),
+          //       PopupMenuItem(
+          //           onTap: (){
+          //             _controller.future.then((value){
+          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/aubergine.json").then((String){
+          //                 value.setMapStyle(String);
+          //               });
+          //             });
+          //           },
+          //           child: Text("Aubergine")
+          //       ),
+          //     ]
+          // ),
         ],
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(widget.latitude, widget.longitude),
-          zoom: 17,
+          target: startLocation,
+          // target: LatLng(widget.latitude, widget.longitude),
+          zoom: 10,
         ),
-        markers: Set<Marker>.of(_marker),
-        zoomGesturesEnabled: true,
-        polylines: polyline,
         onMapCreated: (GoogleMapController controller){
-          _controller.complete(controller);
-          controller.setMapStyle(mapTheme);
-          polyline.add(
-            Polyline(
-              polylineId: PolylineId("route1"),
-              visible: true,
-              points: routeCoords,
-              width: 4,
-              color: Colors.blue,
-              startCap: Cap.roundCap,
-              endCap: Cap.buttCap,
-
-            ),
-          );
+          mapController = controller;
+          // _controller.complete(controller);
+          // controller.setMapStyle(mapTheme);
         },
-        // trafficEnabled: true,
+        // markers: Set<Marker>.of(_marker),
+        markers: markers,
+        zoomGesturesEnabled: true,
+        polylines: Set<Polyline>.of(polylines.values),
         mapType: MapType.normal,
         compassEnabled: true,
-        // polygons: _polygone,
-        zoomControlsEnabled: false,
+        zoomControlsEnabled: true,
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: (){
-
-            },
-            child: Icon(Icons.directions),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton(
-            onPressed: ()async{
-              getUserCurrentLocation().then((value)async{
-                print("my current Location");
-                print(value.longitude.toString() + value.latitude.toString());
-                cureentlng = value.longitude.toDouble();
-                cureentlat = value.latitude.toDouble();
-                _marker.add(
-                  Marker(
-                    markerId: MarkerId("2"),
-                    position: LatLng(value.latitude, value.longitude),
-                    // icon: BitmapDescriptor.defaultMarker,
-                    infoWindow: InfoWindow(
-                      title: "My Current Location",
-                    ),
-                  ),
-                );
-                CameraPosition cameraPosition = CameraPosition(
-                  target: LatLng(value.latitude, value.longitude),
-                  zoom: 16,
-                );
-                final GoogleMapController controller = await _controller.future;
-                controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-              });
-              setState(() {
-
-              });
-            },
-            child: Icon(Icons.my_location),
-          ),
-        ],
-      ),
+      // floatingActionButton: Column(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     FloatingActionButton(
+      //       onPressed: (){
+      //
+      //       },
+      //       child: Icon(Icons.directions),
+      //     ),
+      //     SizedBox(
+      //       height: 10,
+      //     ),
+      //     FloatingActionButton(
+      //       onPressed: ()async{
+      //         getUserCurrentLocation().then((value)async{
+      //           print("my current Location");
+      //           print(value.longitude.toString() + value.latitude.toString());
+      //           cureentlng = value.longitude.toDouble();
+      //           cureentlat = value.latitude.toDouble();
+      //           _marker.add(
+      //             Marker(
+      //               markerId: MarkerId("2"),
+      //               position: LatLng(value.latitude, value.longitude),
+      //               // icon: BitmapDescriptor.defaultMarker,
+      //               infoWindow: InfoWindow(
+      //                 title: "My Current Location",
+      //               ),
+      //             ),
+      //           );
+      //           CameraPosition cameraPosition = CameraPosition(
+      //             target: LatLng(value.latitude, value.longitude),
+      //             zoom: 16,
+      //           );
+      //           final GoogleMapController controller = await _controller.future;
+      //           controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+      //         });
+      //         setState(() {
+      //
+      //         });
+      //       },
+      //       child: Icon(Icons.my_location),
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
