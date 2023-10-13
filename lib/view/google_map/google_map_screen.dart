@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,21 +19,31 @@ class GoogleMapPage extends StatefulWidget {
 class _GoogleMapPageState extends State<GoogleMapPage> {
 
   final List<Marker> _marker = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+  final String key = "AIzaSyBl-KCBDGGH1rxx58AaroJ5pl45E3axUDc";
+  double? cureentlat;
+  double? cureentlng;
+  late GoogleMapController controller;
+  final Set<Polyline> polyline = {};
+  List<LatLng> routeCoords = [];
 
-  List<LatLng> points = [
-    LatLng(34.057705, 71.569144),
-    LatLng(34.057599, 71.566108),
-    LatLng(34.054106, 71.566215),
-    LatLng(34.053466, 71.567750),
-    LatLng(34.054594, 71.569005),
-    LatLng(34.056470, 71.569209),
-  ];
 
-  Set<Polygon> _polygone = HashSet<Polygon>();
+
+
+  // List<LatLng> points = [
+  //   LatLng(34.057705, 71.569144),
+  //   LatLng(34.057599, 71.566108),
+  //   LatLng(34.054106, 71.566215),
+  //   LatLng(34.053466, 71.567750),
+  //   LatLng(34.054594, 71.569005),
+  //   LatLng(34.056470, 71.569209),
+  // ];
+
+  // Set<Polygon> _polygone = HashSet<Polygon>();
 
   Completer<GoogleMapController> _controller = Completer();
-  PolylinePoints polylinePoints = PolylinePoints();
   String mapTheme = "";
+
   // user current location
   Future<Position> getUserCurrentLocation()async{
     await Geolocator.requestPermission().then((value){
@@ -119,43 +131,72 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         ),
         markers: Set<Marker>.of(_marker),
         zoomGesturesEnabled: true,
+        polylines: polyline,
         onMapCreated: (GoogleMapController controller){
           _controller.complete(controller);
           controller.setMapStyle(mapTheme);
+          polyline.add(
+            Polyline(
+              polylineId: PolylineId("route1"),
+              visible: true,
+              points: routeCoords,
+              width: 4,
+              color: Colors.blue,
+              startCap: Cap.roundCap,
+              endCap: Cap.buttCap,
+
+            ),
+          );
         },
         // trafficEnabled: true,
         mapType: MapType.normal,
         compassEnabled: true,
-        polygons: _polygone,
+        // polygons: _polygone,
         zoomControlsEnabled: false,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: ()async{
-          getUserCurrentLocation().then((value)async{
-            print("my current Location");
-            print(value.longitude.toString() + value.latitude.toString());
-            _marker.add(
-              Marker(
-                markerId: MarkerId("2"),
-                position: LatLng(value.latitude, value.longitude),
-                // icon: BitmapDescriptor.defaultMarker,
-                infoWindow: InfoWindow(
-                  title: "My Current Location",
-                ),
-              ),
-            );
-            CameraPosition cameraPosition = CameraPosition(
-              target: LatLng(value.latitude, value.longitude),
-              zoom: 16,
-            );
-            final GoogleMapController controller = await _controller.future;
-            controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-          });
-          setState(() {
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: (){
 
-          });
-        },
-        child: Icon(Icons.my_location),
+            },
+            child: Icon(Icons.directions),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton(
+            onPressed: ()async{
+              getUserCurrentLocation().then((value)async{
+                print("my current Location");
+                print(value.longitude.toString() + value.latitude.toString());
+                cureentlng = value.longitude.toDouble();
+                cureentlat = value.latitude.toDouble();
+                _marker.add(
+                  Marker(
+                    markerId: MarkerId("2"),
+                    position: LatLng(value.latitude, value.longitude),
+                    // icon: BitmapDescriptor.defaultMarker,
+                    infoWindow: InfoWindow(
+                      title: "My Current Location",
+                    ),
+                  ),
+                );
+                CameraPosition cameraPosition = CameraPosition(
+                  target: LatLng(value.latitude, value.longitude),
+                  zoom: 16,
+                );
+                final GoogleMapController controller = await _controller.future;
+                controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+              });
+              setState(() {
+
+              });
+            },
+            child: Icon(Icons.my_location),
+          ),
+        ],
       ),
     );
   }
