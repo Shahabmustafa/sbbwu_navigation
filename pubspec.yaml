@@ -42,11 +42,10 @@ dependencies:
   cloud_firestore: ^4.9.3
   fluttertoast: ^8.2.2
   google_maps_flutter: ^2.5.0
-  flutter_geocoder: ^0.2.2-nullsafety
+#  flutter_geocoder: ^0.2.2-nullsafety
   geolocator: ^10.1.0
-  dio: ^5.3.3
   flutter_polyline_points: ^2.0.0
-  http: ^1.1.0
+  flutter_svg: ^2.0.7
 
 dev_dependencies:
   flutter_test:

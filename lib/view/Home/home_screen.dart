@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:sbbwu_navigator/view/auth/login_screen.dart';
 import 'package:sbbwu_navigator/view/google_map/google_map_screen.dart';
 import 'package:sbbwu_navigator/widgets/custom_message.dart';
-import 'add_department.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
