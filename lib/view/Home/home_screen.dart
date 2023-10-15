@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sbbwu_navigator/utils/app_color.dart';
 import 'package:sbbwu_navigator/view/auth/login_screen.dart';
 import 'package:sbbwu_navigator/view/google_map/google_map_screen.dart';
 import 'package:sbbwu_navigator/widgets/custom_message.dart';
+
+import '../direction_api.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -48,17 +52,26 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context,index){
                   return InkWell(
                     onTap: (){
-                      var latitude = double.parse(snapshot.data!.docs[index]["latitude"]);
-                      var longitude = double.parse(snapshot.data!.docs[index]["longitude"]);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => GoogleMapPage(
-                       latitude: latitude,
-                        longitude: longitude,
-                        departmentName: snapshot.data!.docs[index]["departmentName"],
-                      )));
+                      // var latitude = double.parse(snapshot.data!.docs[index]["latitude"]);
+                      // var longitude = double.parse(snapshot.data!.docs[index]["longitude"]);
+                      // Navigator.push(context, MaterialPageRoute(builder: (context) => GoogleMapPage(
+                      //  latitude: latitude,
+                      //   longitude: longitude,
+                      //   departmentName: snapshot.data!.docs[index]["departmentName"],
+                      // )));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
                     },
-                    child: Card(
-                      child: ListTile(
-                        title: Text("${snapshot.data!.docs[index]["departmentName"]} Department"),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2.5),
+                      child: Card(
+                        color: AppColor.primaryColor,
+                        child: ListTile(
+                          title: Text("${snapshot.data!.docs[index]["departmentName"]} Department",style: GoogleFonts.aBeeZee(
+                            color: Colors.white,
+                          ),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios,color: Colors.white,),
+                        ),
                       ),
                     ),
                   );
@@ -69,12 +82,6 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      // floatingActionButton: auth!.email == adminEmail ?  FloatingActionButton(
-      //   onPressed: (){
-      //     Navigator.push(context, MaterialPageRoute(builder: (context) => AddDepartment()));
-      //   },
-      //   child: Icon(Icons.add),
-      // ) : null,
     );
   }
 }

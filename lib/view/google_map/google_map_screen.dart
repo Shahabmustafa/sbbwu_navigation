@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -19,11 +17,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   Completer<GoogleMapController> _controller = Completer();
   String mapTheme = "";
-
   final List<Marker> _marker = [];
 
   // start this line direction setting
-
   List<LatLng> points = [
     LatLng(34.057705, 71.569144),
     LatLng(34.057599, 71.566108),
@@ -35,6 +31,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   Set<Polygon> _polygone = HashSet<Polygon>();
 
+
+
   // user current location
   Future<Position> getUserCurrentLocation()async{
     await Geolocator.requestPermission().then((value){
@@ -45,12 +43,10 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     return await Geolocator.getCurrentPosition();
   }
 
-
   @override
   void initState() {
     super.initState();
     // fetch direction polylines from Google API
-
     final List<Marker> _list = [
       Marker(
         markerId: MarkerId('1'),
@@ -75,69 +71,68 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       mapTheme = value;
     });
   }
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.departmentName),
         centerTitle: true,
         actions: [
-          // PopupMenuButton(
-          //     itemBuilder: (context) => [
-          //       PopupMenuItem(
-          //           onTap: (){
-          //             _controller.future.then((value){
-          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((String){
-          //                 value.setMapStyle(String);
-          //               });
-          //             });
-          //           },
-          //           child: Text("Silver")
-          //       ),
-          //       PopupMenuItem(
-          //           onTap: (){
-          //             _controller.future.then((value){
-          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/night_theme.json").then((String){
-          //                 value.setMapStyle(String);
-          //               });
-          //             });
-          //           },
-          //           child: Text("Night")
-          //       ),
-          //       PopupMenuItem(
-          //           onTap: (){
-          //             _controller.future.then((value){
-          //               DefaultAssetBundle.of(context).loadString("assets/maptheme/aubergine.json").then((String){
-          //                 value.setMapStyle(String);
-          //               });
-          //             });
-          //           },
-          //           child: Text("Aubergine")
-          //       ),
-          //     ]
-          // ),
+          PopupMenuButton(
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Silver")
+                ),
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/night_theme.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Night")
+                ),
+                PopupMenuItem(
+                    onTap: (){
+                      _controller.future.then((value){
+                        DefaultAssetBundle.of(context).loadString("assets/maptheme/aubergine.json").then((String){
+                          value.setMapStyle(String);
+                        });
+                      });
+                    },
+                    child: Text("Aubergine")
+                ),
+              ]
+          ),
         ],
       ),
       body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(widget.latitude, widget.longitude),
-          zoom: 14,
+          target: LatLng(widget.latitude,widget.longitude),
+          zoom: 19,
         ),
         onMapCreated: (GoogleMapController controller){
           _controller.complete(controller);
-          // controller.setMapStyle(mapTheme);
+          controller.setMapStyle(mapTheme);
+        },
+        polylines: {
+          Polyline(
+            polylineId: PolylineId("route1"),
+            color: Colors.blue,
+            points: points, // List of LatLng points
+            width: 4,
+          ),
         },
         markers: Set<Marker>.of(_marker),
-        // {
-        //   Polyline(
-        //     polylineId: PolylineId("route"),
-        //     points: polylineCoordinates,
-        //     color: Colors.blue,
-        //     width: 6
-        //   ),
-        // },
         zoomGesturesEnabled: true,
-        mapType: MapType.normal,
+        mapType: MapType.satellite,
         compassEnabled: true,
         zoomControlsEnabled: true,
       ),
@@ -145,9 +140,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: (){
-
-            },
+            onPressed: (){},
             child: Icon(Icons.directions),
           ),
           SizedBox(
@@ -160,9 +153,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
                 print(value.longitude.toString() + value.latitude.toString());
                 _marker.add(
                   Marker(
-                    markerId: MarkerId("2"),
+                    markerId: MarkerId("3"),
                     position: LatLng(value.latitude, value.longitude),
-                    // icon: BitmapDescriptor.defaultMarker,
+                    icon: BitmapDescriptor.defaultMarker,
                     infoWindow: InfoWindow(
                       title: "My Current Location",
                     ),
@@ -175,9 +168,7 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
                 final GoogleMapController controller = await _controller.future;
                 controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
               });
-              setState(() {
-
-              });
+              setState(() {});
             },
             child: Icon(Icons.my_location),
           ),
@@ -185,66 +176,4 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       ),
     );
   }
-  // markers.add(Marker( //add start location marker
-  // markerId: MarkerId(startLocation.toString()),
-  // position: startLocation, //position of marker
-  // infoWindow: InfoWindow( //popup info
-  // title: 'Starting Point ',
-  // snippet: 'Start Marker',
-  // ),
-  // icon: BitmapDescriptor.defaultMarker, //Icon for Marker
-  // ));
-  // markers.add(Marker( //add distination location marker
-  // markerId: MarkerId(endLocation.toString()),
-  // position: endLocation, //position of marker
-  // infoWindow: InfoWindow( //popup info
-  // title: 'Destination Point ',
-  // snippet: 'Destination Marker',
-  // ),
-  // icon: BitmapDescriptor.defaultMarker, //Icon for Marker
-  // ));
-  // getDirections()async{
-  //   List<LatLng> polylineCoordinates = [];
-  //
-  //   PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-  //     "AIzaSyAFNRY6Cy-XA24Okt2vJll8NMQa2-6tlDs",
-  //     PointLatLng(startLocation.latitude,startLocation.longitude),
-  //     PointLatLng(endLocation.latitude,endLocation.longitude),
-  //     travelMode: TravelMode.driving,
-  //   );
-  //   if (result.points.isNotEmpty) {
-  //     result.points.forEach((PointLatLng point) {
-  //       polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-  //     });
-  //   } else {
-  //     print(result.points);
-  //   }
-  //   addPolyLine(polylineCoordinates);
-  //
-  //   // try{
-  //   //
-  //   // }catch(e){
-  //   //   print("Error >>>>>>>>> $e");
-  //   // }
-  // }
-  //
-  // addPolyLine(List<LatLng> polylineCoordinates) {
-  //   PolylineId id = PolylineId("poly");
-  //   Polyline polyline = Polyline(
-  //     polylineId: id,
-  //     color: Colors.blue,
-  //     points: polylineCoordinates,
-  //     width: 4,
-  //   );
-  //   polylines[id] = polyline;
-  //   setState(() {});
-  // }
-  // GoogleMapController? mapController; //contrller for Google map
-  // PolylinePoints polylinePoints = PolylinePoints();
-  //
-  // Set<Marker> markers = Set(); //markers for google map
-  // Map<PolylineId, Polyline> polylines = {}; //polylines to show direction
-  //
-  // LatLng startLocation = LatLng(34.028892,71.591183);
-  // LatLng endLocation = LatLng(34.014564,71.554453);
 }
