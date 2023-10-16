@@ -19,6 +19,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   String mapTheme = "";
   final List<Marker> _marker = [];
 
+  double? currentLocation;
+  double? Location;
+
   // start this line direction setting
   List<LatLng> points = [
     LatLng(34.057705, 71.569144),
@@ -28,8 +31,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
     LatLng(34.054594, 71.569005),
     LatLng(34.056470, 71.569209),
   ];
-
-  Set<Polygon> _polygone = HashSet<Polygon>();
 
 
 
@@ -57,16 +58,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
       ),
     ];
     _marker.addAll(_list);
-    _polygone.add(
-      Polygon(
-        polygonId: PolygonId("2"),
-        points: points,
-        fillColor: Colors.blue.withOpacity(0.1),
-        geodesic: true,
-        strokeWidth: 1,
-        strokeColor: Colors.blue,
-      ),
-    );
     DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
       mapTheme = value;
     });
@@ -126,7 +117,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           Polyline(
             polylineId: PolylineId("route1"),
             color: Colors.blue,
-            points: points, // List of LatLng points
             width: 4,
           ),
         },

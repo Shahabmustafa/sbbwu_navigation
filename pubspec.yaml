@@ -45,8 +45,6 @@ dependencies:
   http:
   geolocator: ^10.1.0
   flutter_polyline_points: ^2.0.0
-  flutter_svg: ^2.0.7
-  flutter_polyline: ^0.0.1-beta-2
 
 dev_dependencies:
   flutter_test:

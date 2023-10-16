@@ -5,9 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sbbwu_navigator/utils/app_color.dart';
 import 'package:sbbwu_navigator/view/auth/login_screen.dart';
 import 'package:sbbwu_navigator/view/google_map/google_map_screen.dart';
+import 'package:sbbwu_navigator/view/google_map/practis.dart';
 import 'package:sbbwu_navigator/widgets/custom_message.dart';
-
-import '../direction_api.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -59,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                       //   longitude: longitude,
                       //   departmentName: snapshot.data!.docs[index]["departmentName"],
                       // )));
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Practis()));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2.5),
