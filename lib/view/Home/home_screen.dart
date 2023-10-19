@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sbbwu_navigator/utils/app_color.dart';
 import 'package:sbbwu_navigator/view/auth/login_screen.dart';
 import 'package:sbbwu_navigator/view/google_map/google_map_screen.dart';
-import 'package:sbbwu_navigator/view/google_map/practis.dart';
 import 'package:sbbwu_navigator/widgets/custom_message.dart';
 
 class HomePage extends StatefulWidget {
@@ -51,14 +50,13 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context,index){
                   return InkWell(
                     onTap: (){
-                      // var latitude = double.parse(snapshot.data!.docs[index]["latitude"]);
-                      // var longitude = double.parse(snapshot.data!.docs[index]["longitude"]);
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => GoogleMapPage(
-                      //  latitude: latitude,
-                      //   longitude: longitude,
-                      //   departmentName: snapshot.data!.docs[index]["departmentName"],
-                      // )));
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Practis()));
+                      var latitude = double.parse(snapshot.data!.docs[index]["latitude"]);
+                      var longitude = double.parse(snapshot.data!.docs[index]["longitude"]);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => GoogleMapPage(
+                       latitude: latitude,
+                        longitude: longitude,
+                        departmentName: snapshot.data!.docs[index]["departmentName"],
+                      )));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2.5),

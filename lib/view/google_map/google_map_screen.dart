@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class GoogleMapPage extends StatefulWidget {
   GoogleMapPage({Key? key,required this.latitude,required this.longitude,required this.departmentName}) : super(key: key);
@@ -16,48 +16,64 @@ class GoogleMapPage extends StatefulWidget {
 class _GoogleMapPageState extends State<GoogleMapPage> {
 
   Completer<GoogleMapController> _controller = Completer();
+  String googleAPiKey = "AIzaSyBwuUjRz1WHEH4-WIRidK8QUKJNSqQgDUU";
+  Set<Marker> markers = Set(); //markers for google map
+  final startLocation = LatLng(34.043059, 71.578878);
+  final endLocation = LatLng(34.027482, 71.575359);
+  Map<PolylineId, Polyline> polylines = {}; //polylines to show direction;
   String mapTheme = "";
-  final List<Marker> _marker = [];
+  List<LatLng> polylineCoordinates = [];
+  LocationData? currentLocation;
 
-  double? currentLocation;
-  double? Location;
-
-  // start this line direction setting
-  List<LatLng> points = [
-    LatLng(34.057705, 71.569144),
-    LatLng(34.057599, 71.566108),
-    LatLng(34.054106, 71.566215),
-    LatLng(34.053466, 71.567750),
-    LatLng(34.054594, 71.569005),
-    LatLng(34.056470, 71.569209),
-  ];
-
-
-
-  // user current location
-  Future<Position> getUserCurrentLocation()async{
-    await Geolocator.requestPermission().then((value){
-
-    }).onError((error, stackTrace){
-      print("Error : ${error}");
+  void getLocation()async{
+    Location location = Location();
+    location.getLocation().then((location){
+      currentLocation = location;
     });
-    return await Geolocator.getCurrentPosition();
+    GoogleMapController googleMapController = await _controller.future;
+    location.onLocationChanged.listen((newloc){
+      currentLocation = newloc;
+      googleMapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(
+              zoom: 14,
+              target: LatLng(newloc.latitude!, newloc.longitude!),
+            ),
+          ),
+      );
+      setState(() {
+
+      });
+    });
+  }
+
+  getDirections() async {
+    PolylinePoints polylinePoints = PolylinePoints();
+
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      googleAPiKey,
+      PointLatLng(startLocation.latitude,startLocation.longitude),
+      PointLatLng(endLocation.latitude,endLocation.longitude),
+      travelMode: TravelMode.walking,
+    );
+
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    } else {
+      print(result.errorMessage);
+    }
+    setState(() {
+
+    });
   }
 
   @override
   void initState() {
+    getLocation();
+    getDirections();
     super.initState();
-    // fetch direction polylines from Google API
-    final List<Marker> _list = [
-      Marker(
-        markerId: MarkerId('1'),
-        position: LatLng(widget.latitude,widget.longitude),
-        infoWindow: InfoWindow(
-          title: "${widget.departmentName} Department",
-        ),
-      ),
-    ];
-    _marker.addAll(_list);
     DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
       mapTheme = value;
     });
@@ -104,23 +120,40 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           ),
         ],
       ),
-      body: GoogleMap(
+      body: currentLocation == null ? Center(child: Text("Loading...")) : GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(widget.latitude,widget.longitude),
-          zoom: 19,
+          target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+          zoom: 14,
         ),
         onMapCreated: (GoogleMapController controller){
           _controller.complete(controller);
           controller.setMapStyle(mapTheme);
         },
-        polylines: {
-          Polyline(
-            polylineId: PolylineId("route1"),
-            color: Colors.blue,
-            width: 4,
+        markers: {
+          Marker(
+            markerId: MarkerId("Start Location"),
+            position: startLocation,
+            icon: BitmapDescriptor.defaultMarker,
+          ),
+          Marker(
+            markerId: MarkerId("End Location"),
+            position: endLocation,
+            icon: BitmapDescriptor.defaultMarker,
+          ),
+          Marker(
+            markerId: MarkerId("current location"),
+            position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
+            icon: BitmapDescriptor.defaultMarker,
           ),
         },
-        markers: Set<Marker>.of(_marker),
+        polylines: {
+          Polyline(
+            polylineId: PolylineId("routes"),
+            points: polylineCoordinates,
+            width: 3,
+            color: Colors.blue
+          )
+        },
         zoomGesturesEnabled: true,
         mapType: MapType.satellite,
         compassEnabled: true,
@@ -130,36 +163,15 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: (){},
+            onPressed: (){
+            },
             child: Icon(Icons.directions),
           ),
           SizedBox(
             height: 10,
           ),
           FloatingActionButton(
-            onPressed: ()async{
-              getUserCurrentLocation().then((value)async{
-                print("my current Location");
-                print(value.longitude.toString() + value.latitude.toString());
-                _marker.add(
-                  Marker(
-                    markerId: MarkerId("3"),
-                    position: LatLng(value.latitude, value.longitude),
-                    icon: BitmapDescriptor.defaultMarker,
-                    infoWindow: InfoWindow(
-                      title: "My Current Location",
-                    ),
-                  ),
-                );
-                CameraPosition cameraPosition = CameraPosition(
-                  target: LatLng(value.latitude, value.longitude),
-                  zoom: 16,
-                );
-                final GoogleMapController controller = await _controller.future;
-                controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-              });
-              setState(() {});
-            },
+            onPressed: ()async{},
             child: Icon(Icons.my_location),
           ),
         ],

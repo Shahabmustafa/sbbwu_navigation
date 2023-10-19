@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sbbwu_navigator/utils/app_color.dart';
-import 'package:sbbwu_navigator/view/google_map/practis.dart';
 import 'package:sbbwu_navigator/view/splash/splash_screen.dart';
 import 'package:sbbwu_navigator/view_model/auth/auth_controller.dart';
 import 'firebase_options.dart';
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primaryColor),
           // useMaterial3: true/,
         ),
-        home: Practis(),
+        home: SplashPage(),
       ),
     );
   }
