@@ -18,8 +18,8 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
   Completer<GoogleMapController> _controller = Completer();
   String googleAPiKey = "AIzaSyBwuUjRz1WHEH4-WIRidK8QUKJNSqQgDUU";
   Set<Marker> markers = Set(); //markers for google map
-  final startLocation = LatLng(34.043059, 71.578878);
-  final endLocation = LatLng(34.027482, 71.575359);
+  // final startLocation = LatLng(34.043059, 71.578878);
+  // final endLocation = LatLng(34.027482, 71.575359);
   Map<PolylineId, Polyline> polylines = {}; //polylines to show direction;
   String mapTheme = "";
   List<LatLng> polylineCoordinates = [];
@@ -52,9 +52,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       googleAPiKey,
-      PointLatLng(startLocation.latitude,startLocation.longitude),
-      PointLatLng(endLocation.latitude,endLocation.longitude),
-      travelMode: TravelMode.walking,
+      PointLatLng(widget.latitude,widget.longitude),
+      PointLatLng(currentLocation!.latitude!,currentLocation!.longitude!),
+      travelMode: TravelMode.driving,
     );
 
     if (result.points.isNotEmpty) {
@@ -71,8 +71,6 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
 
   @override
   void initState() {
-    getLocation();
-    getDirections();
     super.initState();
     DefaultAssetBundle.of(context).loadString("assets/maptheme/silver.json").then((value){
       mapTheme = value;
@@ -120,10 +118,10 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
           ),
         ],
       ),
-      body: currentLocation == null ? Center(child: Text("Loading...")) : GoogleMap(
+      body: GoogleMap(
         initialCameraPosition: CameraPosition(
-          target: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-          zoom: 14,
+          target: LatLng(widget.latitude,widget.longitude),
+          zoom: 20,
         ),
         onMapCreated: (GoogleMapController controller){
           _controller.complete(controller);
@@ -131,19 +129,20 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
         },
         markers: {
           Marker(
-            markerId: MarkerId("Start Location"),
-            position: startLocation,
+            markerId: MarkerId("Department Location"),
+            position: LatLng(widget.latitude, widget.longitude),
             icon: BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(
+              title: widget.departmentName,
+            ),
           ),
           Marker(
-            markerId: MarkerId("End Location"),
-            position: endLocation,
+            markerId: MarkerId("Current Location"),
+            position: currentLocation == null ? LatLng(widget.latitude,widget.longitude) : LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
             icon: BitmapDescriptor.defaultMarker,
-          ),
-          Marker(
-            markerId: MarkerId("current location"),
-            position: LatLng(currentLocation!.latitude!, currentLocation!.longitude!),
-            icon: BitmapDescriptor.defaultMarker,
+            infoWindow: InfoWindow(
+              title: "My Current Location",
+            ),
           ),
         },
         polylines: {
@@ -151,19 +150,21 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
             polylineId: PolylineId("routes"),
             points: polylineCoordinates,
             width: 3,
-            color: Colors.blue
+            color: Colors.blue,
+            jointType: JointType.bevel
           )
         },
         zoomGesturesEnabled: true,
         mapType: MapType.satellite,
         compassEnabled: true,
-        zoomControlsEnabled: true,
+        // zoomControlsEnabled: true,
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
             onPressed: (){
+              getDirections();
             },
             child: Icon(Icons.directions),
           ),
@@ -171,7 +172,9 @@ class _GoogleMapPageState extends State<GoogleMapPage> {
             height: 10,
           ),
           FloatingActionButton(
-            onPressed: ()async{},
+            onPressed: (){
+              getLocation();
+            },
             child: Icon(Icons.my_location),
           ),
         ],

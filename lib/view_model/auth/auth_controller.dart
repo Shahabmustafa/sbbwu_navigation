@@ -29,7 +29,7 @@ class AuthController with ChangeNotifier{
      ).then((value){
        setLoading(false);
        Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-       FlutterToast().flutterToastMessage(context, value.toString());
+       FlutterToast().flutterToastMessage(context, "Your have Successfully Login");
      }).onError((error, stackTrace){
        setLoading(false);
        FlutterToast().flutterToastMessage(context, error.toString());
