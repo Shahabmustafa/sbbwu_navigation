@@ -1,7 +1,6 @@
 
 
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sbbwu_navigator/utils/app_color.dart';
@@ -36,10 +35,8 @@ class _SignUpPageState extends State<SignUpPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(
-              height: size.height * 0.15,
-            ),
-            Image.asset("assets/images/images.jpeg"),
+
+            Image.asset("assets/images/images.jpeg",height: 300,width: 300,),
             SizedBox(
               height: size.height * 0.05,
             ),

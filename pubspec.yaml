@@ -47,6 +47,7 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   location: ^5.0.3
   intl: ^0.18.1
+  custom_info_window: ^1.0.1
 
 dev_dependencies:
   flutter_test:

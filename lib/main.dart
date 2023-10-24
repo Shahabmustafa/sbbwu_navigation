@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sbbwu_navigator/utils/app_color.dart';
 import 'package:sbbwu_navigator/view/splash/splash_screen.dart';
 import 'package:sbbwu_navigator/view_model/auth/auth_controller.dart';
+
 import 'firebase_options.dart';
 
 
@@ -32,6 +33,10 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(seedColor: AppColor.primaryColor),
           // useMaterial3: true/,
+          appBarTheme: AppBarTheme(
+            backgroundColor: AppColor.primaryColor,
+          ),
+          cardColor: AppColor.primaryColor,
         ),
         home: SplashPage(),
       ),

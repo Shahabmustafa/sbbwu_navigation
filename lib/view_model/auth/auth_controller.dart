@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:sbbwu_navigator/view/Home/home_screen.dart';
 import 'package:sbbwu_navigator/widgets/custom_message.dart';
+
+import '../../view/Home/type_department.dart';
 
 class AuthController with ChangeNotifier{
 
@@ -28,7 +28,7 @@ class AuthController with ChangeNotifier{
        password: password,
      ).then((value){
        setLoading(false);
-       Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+       Navigator.push(context, MaterialPageRoute(builder: (context) => TypeDepartment()));
        FlutterToast().flutterToastMessage(context, "Your have Successfully Login");
      }).onError((error, stackTrace){
        setLoading(false);
@@ -54,7 +54,7 @@ class AuthController with ChangeNotifier{
           "email" : value.user!.email,
         }).then((value){
           setLoading(false);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TypeDepartment()));
           print("Add Data");
         }).onError((error, stackTrace){
           setLoading(false);

@@ -2,47 +2,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sbbwu_navigator/utils/app_color.dart';
-import 'package:sbbwu_navigator/view/auth/login_screen.dart';
 import 'package:sbbwu_navigator/view/google_map/google_map_screen.dart';
-import 'package:sbbwu_navigator/widgets/custom_message.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class CanteenPage extends StatefulWidget {
+  const CanteenPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CanteenPage> createState() => _CanteenPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CanteenPageState extends State<CanteenPage> {
   String adminEmail = "malaikaiqbal267@gmail.com";
   final auth = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Select Department"),
-        actions: [
-          InkWell(
-            onTap: (){
-              FirebaseAuth.instance.signOut().then((value){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                FlutterToast().flutterToastMessage(context, "You account has sign out");
-              });
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Icon(
-                  Icons.exit_to_app
-              ),
-            ),
-          ),
-        ],
+        title: Text("Select Canteen"),
         centerTitle: true,
-        automaticallyImplyLeading: false,
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("department").snapshots(),
+        stream: FirebaseFirestore.instance.collection("canteen").snapshots(),
         builder: (context,snapshot){
           if(snapshot.hasData){
             return ListView.builder(
@@ -53,17 +33,19 @@ class _HomePageState extends State<HomePage> {
                       var latitude = double.parse(snapshot.data!.docs[index]["latitude"]);
                       var longitude = double.parse(snapshot.data!.docs[index]["longitude"]);
                       Navigator.push(context, MaterialPageRoute(builder: (context) => GoogleMapPage(
-                       latitude: latitude,
+                        latitude: latitude,
                         longitude: longitude,
-                        departmentName: snapshot.data!.docs[index]["departmentName"],
+                        departmentName: snapshot.data!.docs[index]["type"],
                       )));
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2.5),
                       child: Card(
-                        color: AppColor.primaryColor,
+                        shape: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30)
+                        ),
                         child: ListTile(
-                          title: Text("${snapshot.data!.docs[index]["departmentName"]} Department",style: GoogleFonts.aBeeZee(
+                          title: Text("${snapshot.data!.docs[index]["type"]}",style: GoogleFonts.aBeeZee(
                             color: Colors.white,
                           ),
                           ),

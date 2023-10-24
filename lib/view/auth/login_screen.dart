@@ -27,112 +27,121 @@ class _LoginPageState extends State<LoginPage> {
     final authcontroller = Provider.of<AuthController>(context);
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Image.asset("assets/images/images.jpeg"),
-          Form(
-            key: _key,
-            child: Column(
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Image.asset("assets/images/images.jpeg",height: 300,width: 300,),
+            Form(
+              key: _key,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomTextField(
+                    title: "Email",
+                    keyboardType: TextInputType.emailAddress,
+                    controller: emailController,
+                    validator: (value){
+                      if(emailController.text.isEmpty){
+                        return "Please Enter Your Email";
+                      }else if(!regExp.hasMatch(emailController.text)){
+                        return "Please Enter your Valid Email";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: size.height * 0.02,
+                  ),
+                  ValueListenableBuilder(
+                      valueListenable: _obscurePassword,
+                      builder: (context,value,child){
+                        return CustomTextField(
+                          title: "Password",
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: _obscurePassword.value,
+                          suffixIcon: _obscurePassword.value ? Icons.visibility_off : Icons.visibility,
+                          controller: passwordController,
+                          onPress: (){
+                            _obscurePassword.value =! _obscurePassword.value;
+                          },
+                          validator: (value){
+                            if(passwordController.text.isEmpty){
+                              return "Please Enter Your Password";
+                            }else if(passwordController.text.length < 8){
+                              return "Please Enter Password Menimum 8 Digits";
+                            }
+                            return null;
+                          },
+                        );
+                      }
+                  ),
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        InkWell(
+                          onTap: (){
+
+                          },
+                          child: Text(
+                              "Forgoten Password",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: size.height * 0.03,
+                  ),
+                  CustomButton(
+                    title: "Login",
+                    height: 50,
+                    loading: authcontroller.loading,
+                    onTap: (){
+                      if(_key.currentState!.validate()) {
+                        authcontroller.LoginController(
+                          context,
+                          emailController.text,
+                          passwordController.text,
+                        );
+                      }
+                    },
+                  ),
+
+                ],
+              ),
+            ),
+            SizedBox(
+              height: size.height * 0.05,
+            ),
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CustomTextField(
-                  title: "Email",
-                  keyboardType: TextInputType.emailAddress,
-                  controller: emailController,
-                  validator: (value){
-                    if(emailController.text.isEmpty){
-                      return "Please Enter Your Email";
-                    }else if(!regExp.hasMatch(emailController.text)){
-                      return "Please Enter your Valid Email";
-                    }
-                    return null;
-                  },
-                ),
+                Text("Don't have an account?",style: TextStyle(fontWeight: FontWeight.bold),),
                 SizedBox(
-                  height: size.height * 0.02,
+                  width: size.width * 0.01,
                 ),
-                ValueListenableBuilder(
-                    valueListenable: _obscurePassword,
-                    builder: (context,value,child){
-                      return CustomTextField(
-                        title: "Password",
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: _obscurePassword.value,
-                        suffixIcon: _obscurePassword.value ? Icons.visibility_off : Icons.visibility,
-                        controller: passwordController,
-                        onPress: (){
-                          _obscurePassword.value =! _obscurePassword.value;
-                        },
-                        validator: (value){
-                          if(passwordController.text.isEmpty){
-                            return "Please Enter Your Password";
-                          }else if(passwordController.text.length < 8){
-                            return "Please Enter Password Menimum 8 Digits";
-                          }
-                          return null;
-                        },
-                      );
-                    }
-                ),
-                SizedBox(
-                  height: size.height * 0.03,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(right: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      InkWell(
-                        onTap: (){
-
-                        },
-                        child: Text(
-                            "Forgoten Password",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: size.height * 0.03,
-                ),
-                CustomButton(
-                  title: "Login",
-                  height: 50,
-                  loading: authcontroller.loading,
+                InkWell(
                   onTap: (){
-                    if(_key.currentState!.validate()) {
-                      authcontroller.LoginController(
-                        context,
-                        emailController.text,
-                        passwordController.text,
-                      );
-                    }
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
                   },
+                  child: Text("Sign up",style: TextStyle(fontWeight: FontWeight.bold,color: AppColor.primaryColor),),
                 ),
               ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Don't have an account?",style: TextStyle(fontWeight: FontWeight.bold),),
-              SizedBox(
-                width: size.width * 0.01,
-              ),
-              InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()));
-                },
-                child: Text("Sign up",style: TextStyle(fontWeight: FontWeight.bold,color: AppColor.primaryColor),),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
