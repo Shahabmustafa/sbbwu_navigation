@@ -42,7 +42,7 @@ class _BankPageState extends State<BankPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 2.5),
                       child: Card(
                         shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30)
+                          borderRadius: BorderRadius.circular(30),
                         ),
                         child: ListTile(
                           title: Text("${snapshot.data!.docs[index]["type"]}",style: GoogleFonts.aBeeZee(
