@@ -36,7 +36,10 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backgroundColor: AppColor.primaryColor,
           ),
-          cardColor: AppColor.primaryColor,
+          // cardColor: AppColor.primaryColor,
+          cardTheme: CardTheme(
+            color: AppColor.primaryColor,
+          ),
         ),
         home: SplashPage(),
       ),
