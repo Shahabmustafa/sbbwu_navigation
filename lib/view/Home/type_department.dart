@@ -129,7 +129,7 @@ class _TypeDepartmentState extends State<TypeDepartment> {
                       }
                   );
                 }else{
-                  return Center(child: CircularProgressIndicator());
+                  return Center(child: SizedBox());
                 }
               },
             ),
@@ -169,7 +169,7 @@ class _TypeDepartmentState extends State<TypeDepartment> {
                         }
                     );
                   }else{
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: SizedBox());
                   }
                 },
               ),
@@ -209,7 +209,7 @@ class _TypeDepartmentState extends State<TypeDepartment> {
                         }
                     );
                   }else{
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: SizedBox());
                   }
                 },
               ),
@@ -248,7 +248,7 @@ class _TypeDepartmentState extends State<TypeDepartment> {
                         }
                     );
                   }else{
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: SizedBox());
                   }
                 },
               ),
@@ -288,7 +288,7 @@ class _TypeDepartmentState extends State<TypeDepartment> {
                         }
                     );
                   }else{
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: SizedBox());
                   }
                 },
               ),
